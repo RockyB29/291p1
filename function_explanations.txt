@@ -1,0 +1,170 @@
+ECommerceSystem
+This is the main class that encapsulates all functionality of the e-commerce application.
+
+def __init__(self, db_name):
+    self.db_name = db_name
+    self.conn = None
+    self.cursor = None
+    self.current_user = None
+    self.current_role = None
+    self.session_no = None
+Purpose: Initializes the system with a database file path
+Attributes:
+db_name: Path to SQLite database file
+conn: Database connection (initialized as None)
+cursor: Database cursor for executing SQL statements
+current_user: Stores the ID of the logged-in user
+current_role: Stores user role (customer/sales)
+session_no: Tracks customer session number
+Database Management
+connect()
+
+Purpose: Establishes a connection to the SQLite database
+Features:
+Enables foreign key constraints for data integrity
+Includes error handling for connection failures
+close()
+
+Purpose: Safely closes the database connection
+When used: Called when application terminates
+Security Functions
+hash_password()
+
+Purpose: Creates a secure SHA-256 hash of passwords
+Security: Prevents storing plaintext passwords
+Usage: Used during login and registration
+Session Management
+start_session()
+
+Purpose: Creates a new session when a customer logs in
+Functionality:
+Assigns a unique sequential session number for the customer
+Records the session start time
+Sets the current session attribute
+end_session()
+
+Purpose: Ends the current session when a customer logs out
+Functionality: Records the session end time in the database
+Authentication System
+login_screen()
+
+Purpose: Main entry point displaying login/registration options
+Structure: Loop that continues until user logs in or exits
+Returns: Boolean indicating if a user successfully logged in
+login()
+
+Purpose: Authenticates existing users
+Security features:
+Password masking using getpass
+Password hashing for secure comparison
+Parameterized queries to prevent SQL injection
+Functionality: Sets user context and starts session if login successful
+signup()
+
+Purpose: Registers new customers
+Validation:
+Password confirmation matching
+Email uniqueness check
+Data integrity: Uses transaction (commit/rollback) to ensure consistent data
+Security: Stores hashed passwords only
+Customer Interface Functions
+customer_menu()
+
+Purpose: Main menu for customer interactions
+Structure: Loop that routes to appropriate functionality
+Features: End session on logout
+search_products()
+
+Purpose: Allows searching products by keywords
+Key features:
+Records search in database for analytics
+Implements AND semantics for multiple keywords
+Case-insensitive search using LOWER()
+Displays results with pagination
+Security: Uses parameterized queries to prevent SQL injection
+display_product_row() & product_detail_view()
+These helper functions format product data for display and show detailed product information, respectively. The product_detail_view() also records that a product was viewed in the viewedProduct table.
+
+Cart Management Functions
+add_to_cart()
+
+Purpose: Adds products to cart
+Logic:
+Checks if product already exists in cart
+If yes: Increments quantity (with stock validation)
+If no: Adds new cart item with quantity 1
+Validation: Ensures quantity doesn't exceed available stock
+view_cart(), update_cart_quantity(), remove_from_cart()
+These functions handle cart display and management operations, with appropriate validations and error handling.
+
+Order Processing Functions
+checkout() & create_order()
+
+Purpose: Creates an order from the cart items
+Process:
+Generates unique order number
+Creates order record with current date and shipping address
+Creates order lines for each cart item
+Updates product stock quantities
+Clears the shopping cart
+Data integrity: Uses transaction to ensure all-or-nothing operations
+view_orders() & order_detail_view()
+These functions display order history and detailed order information with proper formatting and pagination.
+
+Sales Staff Functions
+sales_menu()
+Main menu for sales staff providing access to product management, sales reports, and product analytics.
+
+manage_products()
+
+Purpose: Allows sales staff to view and update product information
+Functionality:
+Displays product details
+Provides options to update price or stock
+Includes input validation (e.g., positive price values)
+sales_report()
+
+Purpose: Generates sales analytics for the past week
+Metrics:
+Order count
+Product count
+Customer count
+Total sales
+Average per customer
+top_products()
+
+Purpose: Displays top-selling products in two categories
+Categories:
+Top products by order count
+Top products by view count
+Key feature: Handles ties at position 3 as specified in requirements
+Utility Functions
+paginate_results()
+
+    
+Purpose: Generic pagination implementation
+Parameters:
+results: List of items to paginate
+display_func: Function to display each item
+detail_func: Function to show detail view when item selected
+Features:
+Displays 5 items per page
+Provides next/previous navigation
+Allows selecting specific items
+Calculates appropriate page numbers
+run()
+
+Purpose: Main application loop
+Flow:
+Connect to database
+Show login screen
+Based on role, show appropriate menu
+Reset user context after logout
+Ensure database connection is closed
+Main Function
+
+Purpose: Entry point for application
+Features:
+Validates command-line arguments
+Instantiates ECommerceSystem
+Starts application execution
